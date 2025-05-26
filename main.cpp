@@ -25,6 +25,11 @@
 #include <QDBusMetaType>
 #include <QDBusPendingReply>
 
+#include <QList>
+#include <QMap>
+#include <QVariant>
+#include <QDebug>
+
 using namespace NetworkManager;
 
 int main()
@@ -33,96 +38,42 @@ int main()
     QTextStream qout(stdout, QIODevice::WriteOnly);
     QTextStream qin(stdin, QIODevice::ReadOnly);
 
-    //NetworkManager::ConnectionSettings::Ptr connectionSettings;
-    // NetworkManager::WiredSetting::Ptr settings = connectionSettings->setting(NetworkManager::Setting::Wired).dynamicCast<NetworkManager::WiredSetting>();
-    NetworkManager::ConnectionSettings *settings = new NetworkManager::ConnectionSettings(NetworkManager::ConnectionSettings::Wired);
-    const Device::List deviceList = NetworkManager::networkInterfaces();
+    // nmcli connection
+    // nmcli connection add con-name test3 type 802-3-ethernet ipv4.method manual ipv4.addresses 192.168.1.100/24
+    NetworkManager::Connection::List connectionList = NetworkManager::listConnections();
 
-    WiredDevice::Ptr wiredDevice;
+    if (connectionList.isEmpty()) {
+        qInfo() << "No network connections are configured.";
+    } else {
+        qInfo() << "Configured Network Connections (" << connectionList.count() << "):";
+        for (const NetworkManager::Connection::Ptr connection : connectionList) {
+            if (connection) { // Always good to check if the pointer is valid
+                NetworkManager::ConnectionSettings::Ptr settings = connection->settings();
 
-    // We have to find some wired device
-    for (Device::Ptr dev : deviceList) {
-        if (dev->type() == Device::Ethernet) {
-            wiredDevice = qobject_cast<WiredDevice *>(dev);
-            qInfo() << "Device : " << wiredDevice->interfaceName();
-            break;
+                // NetworkManager::Ipv4Setting::Ptr ipv4Setting = setting.staticCast<NetworkManager::Ipv4Setting>();
+                if (settings->connectionType() == NetworkManager::ConnectionSettings::Wired){
+                    // if(ipv4Setting->method() == NetworkManager::Ipv4Setting::Manual){
+                    //     qInfo().nospace() << "  ID: " << connection->name();
+                    // }
+
+                // nmcli connection show test3
+
+                qDebug() << "Wired Settings";
+
+                // if (ipv4Setting) {
+                //     // qInfo().nospace() << "    IPv4 Method: " << ipv4Setting->methodToString(ip4Setting->method());
+                //     if (ipv4Setting.Method() == NetworkManager::Ipv4Setting::Manual) {
+                //         QList<NetworkManager::IpAddress> addresses = ip4Setting->addresses();
+                //         if (!addresses.isEmpty()) {
+                //             qInfo().nospace() << "      Static IP: " << addresses.first().address() << "/" << addresses.first().prefix();
+                //         }
+                //     }
+                // } else {
+                //     qInfo().nospace() << "    IPv4: (No IPv4 settings or disabled)";
+                // }
+                // qInfo() << ""; // Blank line for readability
+                }
+            }
         }
     }
-
-    if (!wiredDevice) {
-        return 1;
-    }
-
-    // NetworkManager::ConnectionSettings
-    // Now we will prepare our new connection, we have to specify ID and create new UUID
-    QString wiredID = "test";
-
-    settings->setId(wiredID);
-    settings->setUuid(QUuid::createUuid().toString().mid(1, QUuid::createUuid().toString().length() - 2));
-    settings->setConnectionType(NetworkManager::ConnectionSettings::Wired);
-    settings->setAutoconnect(true);
-
-    // NetworkManager::WiredSetting
-
-    // NetworkManager::Ipv4Setting
-    NetworkManager::Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
-    QString ConfigMethod = "Manual";
-    // ConfigMethod = "Automatic";
-    if(ConfigMethod == "Automatic")
-        ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Automatic);
-    else{
-        qInfo() << "set static ip addr";
-        ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Manual);
-
-        QList<NetworkManager::IpAddress> list;
-        NetworkManager::IpAddress address;
-
-        // address.setNetmask(QHostAddress(d->model.item(i, 1)->text()));
-        QHostAddress ip("192.168.0.101");
-        QHostAddress netmask("255.255.255.0");
-        address.setIp(ip);
-        address.setNetmask(netmask);
-        list.append(address);
-
-        // ipv4Setting->setAddresses(list);
-        // address.setPrefixLength(24);
-        // ip4Setting->setGateway("192.168.1.1");
-        // ip4Setting->addDns("8.8.8.8");
-    }
-    qDebug() << (*ipv4Setting.data());
-    // We try to add and activate our new wireless connection
-    // settings::ConnectionSettings (ipv4Setting);
-    QDBusPendingReply<QDBusObjectPath> reply = NetworkManager::addConnection(settings->toMap());
-
-    // auto watcher = new QDBusPendingCallWatcher(reply, this);
-    // watcher->setProperty("action", AddConnection);
-    // watcher->setProperty("connection", map.value(QStringLiteral("connection")).value(QStringLiteral("id")));
-
-
-    reply.waitForFinished();
-    qInfo() << "---Here---";
-    if (reply.isError()) {
-        qWarning() << "Failed to add connection:" << reply.error().name() << reply.error().message();
-    } else {
-        QDBusObjectPath newConnectionPath = reply.value();
-        qInfo() << "Connection added successfully. Path:" << newConnectionPath.path();
-    }
-
-    //NetworkManager::Connection connection(reply.value());
-   // NetworkManager::ConnectionSettings::Ptr newSettings = connection.settings();
-    // qDebug() << (*newSettings.data());
-
-
-    // Check if this connection was added successfuly
-    // if (reply.isValid()) {
-        // Now our connection should be added in NetworkManager and we can print all settings pre-filled from NetworkManager
-        // qInfo() << "---Here---" << connectionPath;
-        // NetworkManager::Connection connection(reply);
-        // NetworkManager::ConnectionSettings::Ptr newSettings = connection.settings();
-        // Print resulting settings
-        // qInfo() << (*newSettings.data());
-
-    // } else {
-        // qInfo() << "Connection failed: " << reply.error();
-    // }
 }

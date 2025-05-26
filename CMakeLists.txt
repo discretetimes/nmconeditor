@@ -30,6 +30,7 @@ set(PROJECT_SOURCES
 # Create an executable
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
     main.cpp
+    addcon.cpp
 )
 
 # Link Qt libraries
