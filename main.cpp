@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
         }
     }
 
+    void listWiredConnections();
+    // test
+    listWiredConnections();
 
     QString findDeviceByName(const QString & iface);
 
@@ -91,7 +94,7 @@ int main(int argc, char *argv[])
     // createWiredConnection("test4", "enp3s0f4u1u1");
 
     // test
-    deleteConnection("test4");
+    // deleteConnection("test4");
 
     // Example: Create and activate new connection
     return app.exec();
@@ -136,6 +139,32 @@ void listDevices()
             if (wiredDevice) {
                 qDebug() << "MAC Address:" << wiredDevice->permanentHardwareAddress();
             }
+        }
+    }
+}
+
+
+void listWiredConnections()
+{
+    NetworkManager::Connection::List connections = NetworkManager::listConnections();
+
+    for (const NetworkManager::Connection::Ptr &connection : connections) {
+        // Query ipv4 setting
+        NetworkManager::ConnectionSettings::Ptr setting = connection->settings();
+        NetworkManager::Ipv4Setting::Ptr ipv4Setting = setting->setting(NetworkManager::Setting::Ipv4).dynamicCast<NetworkManager::Ipv4Setting>();
+        // qInfo() << "connection method:" << ipv4Setting->method();
+        if (ipv4Setting->method() == NetworkManager::Ipv4Setting::ConfigMethod::Manual) {
+            // Activate the connection
+            // connection = connectionName;
+            // device = interfaceName;
+            // specificObject = connection->path();
+
+            // TODO
+            // use uuid to manage connection
+            // NetworkManager::findConnectionByUuid ( const QString & uuid )
+            // NetworkManager::activateConnection(connection, device, specificObject); // "/" = default device
+            qInfo() << "connection name:" << connection->name();
+            return;
         }
     }
 }
