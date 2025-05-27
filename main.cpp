@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     // modifyIpv4Setting();
 
     // test
-    // createWiredConnection("test4", "enp3s0f4u1u1");
+    createWiredConnection("test4", "enp3s0f4u1u1");
 
     // Example: Create and activate new connection
     return app.exec();
@@ -204,16 +204,28 @@ void deactivateWiredConnection(const QString &connectionName)
     qWarning() << "No active connection found:" << connectionName;
 }
 
-void createWiredConnection(const QString &name, const QString &interfaceName)
+void createAutoWiredConnection(const QString &name, const QString &interfaceName)
 {
     // NetworkManager::ConnectionSettings settings;
-    NetworkManager::ConnectionSettings::Ptr settings(new NetworkManager::ConnectionSettings());
-    settings->setId(name);
-    settings->setUuid(NetworkManager::ConnectionSettings::createNewUuid());
-    settings->setInterfaceName(interfaceName);
+
+    NetworkManager::ConnectionSettings *m_setting = new NetworkManager::ConnectionSettings(NetworkManager::ConnectionSettings::Wired);
+    const Device::List deviceList = NetworkManager::networkInterfaces();
+    WiredDevice::Ptr wiredDevice;
+
+    // We have to find some wired device
+    for (Device::Ptr dev : deviceList) {
+        if (dev->type() == Device::Ethernet) {
+            wiredDevice = qobject_cast<WiredDevice *>(dev);
+            break;
+        }
+    }
+
+    m_setting->setId(name);
+    m_setting->setUuid(NetworkManager::ConnectionSettings::createNewUuid());
+    m_setting->setInterfaceName(interfaceName);
 
     // IPv4 settings
-    NetworkManager::Ipv4Setting::Ptr ipv4Setting(new NetworkManager::Ipv4Setting());
+    NetworkManager::Ipv4Setting::Ptr ipv4Setting = m_setting->setting(NetworkManager::Setting::Ipv4).dynamicCast<NetworkManager::Ipv4Setting>();
     // ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Manual);
     ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Automatic);
 
@@ -224,10 +236,24 @@ void createWiredConnection(const QString &name, const QString &interfaceName)
     // ipv4Setting->setAddresses(ipAddresses);
 
     // Add IPv4 setting to the connection
-    Setting::Ptr m_setting = settings->setting(Setting::Ipv4);
 
     if (m_setting) {
         qDebug() << "Updated IPv4 Method:" << m_setting->name();
+    }
+
+    QDBusPendingReply<QDBusObjectPath> reply = NetworkManager::addConnection(m_setting->toMap());
+
+    reply.waitForFinished();
+    qInfo() << "---Here---";
+    if (reply.isError()) {
+        qWarning() << "Failed to add connection:" << reply.error().name() << reply.error().message();
+    } else {
+        QDBusObjectPath newConnectionPath = reply.value();
+        qInfo() << "Connection added successfully. Path:" << newConnectionPath.path();
+        // NetworkManager::Connection::Ptr m_conn = NetworkManager::findConnection(newConnectionPath.path());
+        // NetworkManager::Connection connection(newConnectionPath);
+        // NetworkManager::ConnectionSettings::Ptr newSettings = connection.settings();
+        // qDebug() << (*newSettings.data());
     }
     // Configure as DHCP (default)
     // settings.setIpv4Method(NetworkManager::ConnectionSettings::Automatic);
@@ -250,7 +276,106 @@ void createWiredConnection(const QString &name, const QString &interfaceName)
 
     // Add the new connection
     // NetworkManager::addConnection(settings.toMap());
-    qDebug() << "Created new wired connection:" << name;
+    // qDebug() << "Created new wired connection:" << name;
+}
+
+void createWiredConnection(const QString &name, const QString &interfaceName)
+{
+    // NetworkManager::ConnectionSettings settings;
+
+    NetworkManager::ConnectionSettings::Ptr m_setting =
+        NetworkManager::ConnectionSettings::Ptr(new NetworkManager::ConnectionSettings(NetworkManager::ConnectionSettings::Wired));
+    const Device::List deviceList = NetworkManager::networkInterfaces();
+    WiredDevice::Ptr wiredDevice;
+
+    // We have to find some wired device
+    for (Device::Ptr dev : deviceList) {
+        if (dev->type() == Device::Ethernet) {
+            wiredDevice = qobject_cast<WiredDevice *>(dev);
+            break;
+        }
+    }
+
+    m_setting->setId(name);
+    m_setting->setUuid(NetworkManager::ConnectionSettings::createNewUuid());
+    m_setting->setInterfaceName(interfaceName);
+
+    // NetworkManager::ConnectionSettings::Ptr settings = m_setting->Ptr();
+
+    // Set the addresses
+    // ipv4Setting->setAddresses(ipv4Addresses);
+
+
+    // Add IPv4 setting to the connection
+
+    // ipv4Setting->toMap();
+    // QDBusPendingReply<QDBusObjectPath> reply0 = NetworkManager::addConnection(m_setting->toMap());
+
+    // IPv4 settings
+    NetworkManager::Ipv4Setting::Ptr ipv4Setting = m_setting->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+
+    // Need to be initialized
+    ipv4Setting->setInitialized(true);
+    ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Manual);
+    // m_setting->settings();
+    // qInfo() << "Method : " << ipv4Setting->method();
+    // ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Automati);
+    // ip address
+    QList<IpAddress> ipv4Addresses;
+    IpAddress addr;
+    addr.setIp(QHostAddress("192.168.1.150")); // IP address
+    addr.setPrefixLength(24); // Subnet mask (255.255.255.0)
+    // addr.setGateway(QHostAddress("192.168.1.1")); // Gateway
+    ipv4Addresses.append(addr);
+
+    // Optional: Add a second IP address (if needed)
+    IpAddress addr2;
+    addr2.setIp(QHostAddress("192.168.1.151"));
+    addr2.setPrefixLength(24);
+    // No gateway for secondary address (typically only the first has a gateway)
+    ipv4Addresses.append(addr2);
+
+    ipv4Setting->setAddresses(ipv4Addresses);
+    // qInfo() << "Pre ipv4 settings: " << (*ipv4Setting.data());
+
+    // qInfo() << (*m_setting.data());
+
+    QDBusPendingReply<QDBusObjectPath> reply = NetworkManager::addConnection(m_setting->toMap());
+
+
+    reply.waitForFinished();
+
+    qInfo() << "---Here---";
+    if (reply.isError()) {
+        qWarning() << "Failed to add connection:" << reply.error().name() << reply.error().message();
+    } else {
+        QDBusObjectPath newConnectionPath = reply.value();
+        qInfo() << "Connection added successfully. Path:" << newConnectionPath.path();
+        // NetworkManager::ConnectionSettings::Ptr newSettings = NetworkManager::findConnection(newConnectionPath.path())->settings();
+        // qInfo() << " Retrive: "<< (*newSettings.data());
+    }
+    // Configure as DHCP (default)
+    // settings.setIpv4Method(NetworkManager::ConnectionSettings::Automatic);
+    // ipv4Setting->setMethod(NetworkManager::Ipv4Setting::Automatic);
+
+    // OR set a static IP
+    /*
+    settings.setIpv4Method(NetworkManager::ConnectionSettings::Manual);
+    NetworkManager::Ipv4Setting ipv4;
+    ipv4.setAddresses({
+        {QHostAddress("192.168.1.100"), 24, QHostAddress("192.168.1.1")}
+    });
+    ipv4.setDns({QHostAddress("8.8.8.8"), QHostAddress("8.8.4.4")});
+    settings.setIpv4(ipv4);
+    */
+
+    // Add wired-specific settings
+    // NetworkManager::WiredSetting wired;
+    // settings.addSetting(wired);
+
+    // Add the new connection
+    // NetworkManager::addConnection(settings.toMap());
+    // qDebug() << "Created new wired connection:" << name;
 }
 
 void inspectConnectionSettings() {

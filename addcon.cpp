@@ -130,6 +130,8 @@ void addcon()
     } else {
         QDBusObjectPath newConnectionPath = reply.value();
         qInfo() << "Connection added successfully. Path:" << newConnectionPath.path();
+        NetworkManager::ConnectionSettings::Ptr newSettings = NetworkManager::findConnection(newConnectionPath.path())->settings();
+        qInfo() << (*newSettings.data());
         // NetworkManager::Connection connection(newConnectionPath);
         // NetworkManager::ConnectionSettings::Ptr newSettings = connection.settings();
         // qDebug() << (*newSettings.data());
