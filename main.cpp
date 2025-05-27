@@ -54,10 +54,15 @@ int main(int argc, char *argv[])
 
     void createWiredConnection(const QString &name, const QString &interfaceName);
 
+    void deleteConnection(const QString &name);
 
-    void inspectConnectionSettings();
+    //
+    // void inspectConnectionSettings();
 
-    void modifyIpv4Setting();
+    // TODO
+    // void modifyIpv4Setting();
+
+
 
     // QString m_devicePath = "/org/freedesktop/NetworkManager/Devices/3";
 
@@ -83,7 +88,10 @@ int main(int argc, char *argv[])
     // modifyIpv4Setting();
 
     // test
-    createWiredConnection("test4", "enp3s0f4u1u1");
+    // createWiredConnection("test4", "enp3s0f4u1u1");
+
+    // test
+    deleteConnection("test4");
 
     // Example: Create and activate new connection
     return app.exec();
@@ -376,6 +384,32 @@ void createWiredConnection(const QString &name, const QString &interfaceName)
     // Add the new connection
     // NetworkManager::addConnection(settings.toMap());
     // qDebug() << "Created new wired connection:" << name;
+}
+
+
+void deleteConnection(const QString &connectionName)
+{
+    NetworkManager::Connection::List connections = NetworkManager::listConnections();
+
+    for (const NetworkManager::Connection::Ptr &connection : connections) {
+        if (connection->name() == connectionName) {
+            // Activate the connection
+            // connection = connectionName;
+            // device = interfaceName;
+            // specificObject = connection->path();
+
+            // TODO
+            // use uuid to manage connection
+            // NetworkManager::findConnectionByUuid ( const QString & uuid )
+            // NetworkManager::activateConnection(connection, device, specificObject); // "/" = default device
+            qInfo() << "Deleting connection:" << connectionName;
+            connection->remove();
+            qDebug() << "Activated connection:" << connectionName;
+            return;
+        }
+    }
+
+    qWarning() << "Connection not found:" << connectionName;
 }
 
 void inspectConnectionSettings() {
