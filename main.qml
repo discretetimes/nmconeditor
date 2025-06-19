@@ -24,22 +24,29 @@ ApplicationWindow {
                 font.bold: true
             }
 
-            ListView {
-                id: connectionsView
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                model: networkModel.listWiredConnections()
-                delegate: ItemDelegate {
-                    text: modelData
-                }
-            }
-
             Button {
                 text: "Manage Connections"
                 Layout.alignment: Qt.AlignRight
                 onClicked: stackView.push(controlsPage)
             }
+
+            ListView {
+                id: connectionsView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                model: networkModel
+                delegate: ItemDelegate {
+                    height: 50
+                    Text {
+                        text: "Name: " + model.name
+                    }
+                }
+            }
         }
+    }
+
+    Component.onCompleted: {
+        networkModel.refresh()
     }
 
     Component {
