@@ -32,6 +32,13 @@ set(PROJECT_SOURCES
 # Create an executable
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
     main.cpp
+
+
+    nmproxy.cpp
+    nmproxy.h
+    main.qml
+    main.qrc
+
 )
 
 # Link Qt libraries
