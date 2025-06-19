@@ -25,6 +25,8 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
 
 set(PROJECT_SOURCES
     main.cpp
+    NetworkConnectionsPage.qml
+    EditingEthernetPage.qml
 )
 
 # Create an executable

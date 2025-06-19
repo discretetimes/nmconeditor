@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     // modifyIpv4Setting();
 
     // test
-    // createWiredConnection("test4", "enp3s0f4u1u1");
+    createWiredConnection("test4", "enp3s0f4u1u1");
 
     // test
     // deleteConnection("test4");

@@ -6,6 +6,10 @@ frontend
 ===========
 参考 nm-connection-editor
 
+Connection between qml & cpp
+==============================
+
+
 Page 1
 =========
 discription: first page
@@ -36,7 +40,6 @@ Save Cacel
 Page 3
 ========
 modify and show details
-
 
 nmcli connection add con-name test3 type 802-3-ethernet ipv4.method manual ipv4.addresses 192.168.1.100/24
 
