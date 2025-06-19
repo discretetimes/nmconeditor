@@ -1,5 +1,5 @@
-#ifndef NMPROXY_H
-#define NMPROXY_H
+#ifndef NETWORKMODEL_H
+#define NETWORKMODEL_H
 
 #include <QObject>
 #include <QAbstractListModel>
@@ -31,11 +31,11 @@
 #include <QVariant>
 #include <QDebug>
 
-class NMProxy : public QObject
+class NetworkModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit NMProxy(QObject *parent = nullptr);
+    explicit NetworkModel(QObject *parent = nullptr);
 
 public slots:
     void listDevices();
@@ -49,5 +49,5 @@ public slots:
     void modifyIpv4Setting(const QString &connectionName);
 };
 
-#endif // NMPROXY_H
+#endif // NETWORKMODEL_H
 

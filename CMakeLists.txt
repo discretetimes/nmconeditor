@@ -34,8 +34,8 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
     main.cpp
 
 
-    nmproxy.cpp
-    nmproxy.h
+    networkmodel.cpp
+    networkmodel.h
     main.qml
     main.qrc
 

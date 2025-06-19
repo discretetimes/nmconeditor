@@ -28,7 +28,7 @@ ApplicationWindow {
                 id: connectionsView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                model: nmProxy.listWiredConnections()
+                model: networkModel.listWiredConnections()
                 delegate: ItemDelegate {
                     text: modelData
                 }

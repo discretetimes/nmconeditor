@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "nmproxy.h"
+#include "networkmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    NMProxy nmProxy;
-    engine.rootContext()->setContextProperty("nmProxy", &nmProxy);
+    NetworkModel networkModel;
+    engine.rootContext()->setContextProperty("networkModel", &networkModel);
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

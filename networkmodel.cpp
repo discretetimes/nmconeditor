@@ -1,4 +1,4 @@
-#include "nmproxy.h"
+#include "networkmodel.h"
 
 #include <QDebug>
 #include <NetworkManagerQt/Manager>
@@ -11,11 +11,11 @@
 
 using namespace NetworkManager;
 
-NMProxy::NMProxy(QObject *parent) : QObject(parent)
+NetworkModel::NetworkModel(QObject *parent) : QObject(parent)
 {
 }
 
-void NMProxy::listDevices()
+void NetworkModel::listDevices()
 {
     QList<NetworkManager::Device::Ptr> devices = NetworkManager::networkInterfaces();
     if (devices.isEmpty()) {
@@ -26,7 +26,7 @@ void NMProxy::listDevices()
     }
 }
 
-QStringList NMProxy::listWiredConnections()
+QStringList NetworkModel::listWiredConnections()
 {
     QStringList connectionNames;
     for (const auto &conn : NetworkManager::listConnections()) {
@@ -38,7 +38,7 @@ QStringList NMProxy::listWiredConnections()
     return connectionNames;
 }
 
-QString NMProxy::findDeviceByName(const QString &iface)
+QString NetworkModel::findDeviceByName(const QString &iface)
 {
     for (const auto &device : NetworkManager::networkInterfaces()) {
         if (device->interfaceName() == iface) {
@@ -48,7 +48,7 @@ QString NMProxy::findDeviceByName(const QString &iface)
     return QString();
 }
 
-void NMProxy::activateWiredConnection(const QString &connectionName, const QString &interfaceName)
+void NetworkModel::activateWiredConnection(const QString &connectionName, const QString &interfaceName)
 {
     Connection::Ptr connectionToActivate;
     for (const auto &conn : NetworkManager::listConnections()) {
@@ -72,7 +72,7 @@ void NMProxy::activateWiredConnection(const QString &connectionName, const QStri
     NetworkManager::activateConnection(connectionToActivate->path(), devicePath, "/");
 }
 
-void NMProxy::deactivateWiredConnection(const QString &connectionName)
+void NetworkModel::deactivateWiredConnection(const QString &connectionName)
 {
     for (const auto &active : NetworkManager::activeConnections()) {
         if (active->connection()->name() == connectionName) {
@@ -84,7 +84,7 @@ void NMProxy::deactivateWiredConnection(const QString &connectionName)
     qWarning() << "No active connection found with name:" << connectionName;
 }
 
-void NMProxy::createAutoWiredConnection(const QString &name, const QString &interfaceName)
+void NetworkModel::createAutoWiredConnection(const QString &name, const QString &interfaceName)
 {
     ConnectionSettings settings(ConnectionSettings::Wired);
     settings.setId(name);
@@ -103,7 +103,7 @@ void NMProxy::createAutoWiredConnection(const QString &name, const QString &inte
     }
 }
 
-void NMProxy::createWiredConnection(const QString &name, const QString &interfaceName)
+void NetworkModel::createWiredConnection(const QString &name, const QString &interfaceName)
 {
     ConnectionSettings::Ptr settings =
         ConnectionSettings::Ptr(new ConnectionSettings(ConnectionSettings::Wired));
@@ -136,7 +136,7 @@ void NMProxy::createWiredConnection(const QString &name, const QString &interfac
     }
 }
 
-void NMProxy::deleteConnection(const QString &name)
+void NetworkModel::deleteConnection(const QString &name)
 {
     for (const auto &conn : NetworkManager::listConnections()) {
         if (conn->name() == name) {
@@ -148,7 +148,7 @@ void NMProxy::deleteConnection(const QString &name)
     qWarning() << "Connection" << name << "not found.";
 }
 
-void NMProxy::modifyIpv4Setting(const QString &connectionName)
+void NetworkModel::modifyIpv4Setting(const QString &connectionName)
 {
     for (const auto &conn : NetworkManager::listConnections()) {
         if (conn->name() == connectionName) {

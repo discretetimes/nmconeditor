@@ -14,7 +14,7 @@ Page {
 
         Button {
             text: "List Devices"
-            onClicked: nmProxy.listDevices()
+            onClicked: networkModel.listDevices()
         }
 
         TextField {
@@ -29,32 +29,32 @@ Page {
 
         Button {
             text: "Activate Wired Connection"
-            onClicked: nmProxy.activateWiredConnection(connectionNameInput.text, interfaceNameInput.text)
+            onClicked: networkModel.activateWiredConnection(connectionNameInput.text, interfaceNameInput.text)
         }
 
         Button {
             text: "Deactivate Wired Connection"
-            onClicked: nmProxy.deactivateWiredConnection(connectionNameInput.text)
+            onClicked: networkModel.deactivateWiredConnection(connectionNameInput.text)
         }
 
         Button {
             text: "Create Auto Wired Connection"
-            onClicked: nmProxy.createAutoWiredConnection(connectionNameInput.text, interfaceNameInput.text)
+            onClicked: networkModel.createAutoWiredConnection(connectionNameInput.text, interfaceNameInput.text)
         }
 
         Button {
             text: "Create Manual Wired Connection"
-            onClicked: nmProxy.createWiredConnection(connectionNameInput.text, interfaceNameInput.text)
+            onClicked: networkModel.createWiredConnection(connectionNameInput.text, interfaceNameInput.text)
         }
 
         Button {
             text: "Delete Connection"
-            onClicked: nmProxy.deleteConnection(connectionNameInput.text)
+            onClicked: networkModel.deleteConnection(connectionNameInput.text)
         }
 
         Button {
             text: "Modify IPv4 to Auto"
-            onClicked: nmProxy.modifyIpv4Setting(connectionNameInput.text)
+            onClicked: networkModel.modifyIpv4Setting(connectionNameInput.text)
         }
     }
 }
