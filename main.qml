@@ -8,43 +8,42 @@ ApplicationWindow {
     height: 480
     title: "NetworkManager Connection Editor"
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 10
+    StackView {
+        id: stackView
+        initialItem: connectionsPage
+    }
 
-        TextField {
-            id: connectionNameInput
-            placeholderText: "Enter Connection Name"
-        }
+    Component {
+        id: connectionsPage
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 10
 
-        TextField {
-            id: interfaceNameInput
-            placeholderText: "Enter Interface Name"
-        }
+            Label {
+                text: "Available Wired Connections"
+                font.bold: true
+            }
 
-        Button {
-            text: "Activate Wired Connection"
-            onClicked: nmProxy.activateWiredConnection(connectionNameInput.text, interfaceNameInput.text)
-        }
+            ListView {
+                id: connectionsView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                model: nmProxy.listWiredConnections()
+                delegate: ItemDelegate {
+                    text: modelData
+                }
+            }
 
-        Button {
-            text: "Deactivate Wired Connection"
-            onClicked: nmProxy.deactivateWiredConnection(connectionNameInput.text)
+            Button {
+                text: "Manage Connections"
+                Layout.alignment: Qt.AlignRight
+                onClicked: stackView.push(controlsPage)
+            }
         }
+    }
 
-        Button {
-            text: "Create Manual Wired Connection"
-            onClicked: nmProxy.createWiredConnection(connectionNameInput.text, interfaceNameInput.text)
-        }
-
-        Button {
-            text: "Delete Connection"
-            onClicked: nmProxy.deleteConnection(connectionNameInput.text)
-        }
-
-        Button {
-            text: "Modify IPv4 to Auto"
-            onClicked: nmProxy.modifyIpv4Setting(connectionNameInput.text)
-        }
+    Component {
+        id: controlsPage
+        ControlsPage {}
     }
 }

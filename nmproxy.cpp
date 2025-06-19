@@ -31,6 +31,7 @@ QStringList NMProxy::listWiredConnections()
     QStringList connectionNames;
     for (const auto &conn : NetworkManager::listConnections()) {
         if (conn->settings()->connectionType() == NetworkManager::ConnectionSettings::Wired) {
+            qInfo() << "Wired con name:" << conn->name() ;
             connectionNames.append(conn->name());
         }
     }
