@@ -8,12 +8,12 @@ ApplicationWindow {
     height: 480
     title: "NetworkManager Connection Editor"
 
-    StackView {
-        id: stackView
-        initialItem: connectionsPage
-    }
+    // StackView {
+    //     id: stackView
+    //     initialItem: connectionsPage
+    // }
 
-    Component {
+    // Component {
         id: connectionsPage
         ColumnLayout {
             anchors.fill: parent
@@ -43,14 +43,14 @@ ApplicationWindow {
                 }
             }
         }
-    }
+    // }
 
-    Component.onCompleted: {
-        networkModel.refresh()
-    }
+    // Component.onCompleted: {
+    //     networkModel.refresh()
+    // }
 
-    Component {
-        id: controlsPage
-        ControlsPage {}
-    }
+    // Component {
+    //     id: controlsPage
+    //     ControlsPage {}
+    // }
 }
