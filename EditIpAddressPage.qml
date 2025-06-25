@@ -15,10 +15,10 @@ Page {
     Component.onCompleted: {
         connectionDetails = networkModel.getConnectionDetails(connectionUuid)
         // Set the initial index of the ComboBox
-        methodComboBox.currentIndex = connectionDetails.ipv4Method === 1 ? 0 : 1;
-        for (var i = 0; i < connectionDetails.addresses.length; ++i) {
-            addressModel.append({ "address": connectionDetails.addresses[i] })
-        }
+        // methodComboBox.currentIndex = connectionDetails.ipv4Method === 1 ? 0 : 1;
+        // for (var i = 0; i < connectionDetails.addresses.length; ++i) {
+        //     addressModel.append({ "address": connectionDetails.addresses[i] })
+        // }
     }
 
     ColumnLayout {
@@ -29,9 +29,9 @@ Page {
         ComboBox {
             id: methodComboBox
             Layout.fillWidth: true
+            currentIndex: connectionDetails.ipv4Method === 0 ? 0 : 1
             model: ["Automatic (DHCP)", "Manual"]
         }
-
 
         ListView {
             id: addressListView
@@ -88,14 +88,12 @@ Page {
                     }
                 }
             }
-
-            var newSettings = {
-                // Get the new method from the ComboBox (1 for Auto, 2 for Manual)
-                "ipv4Method": methodComboBox.currentIndex === 0 ? 1 : 2,
-                "addresses": newAddresses
-            }
-
             networkModel.updateConnection(connectionUuid, newSettings)
+
+            var ipv4Method = methodComboBox.currentIndex === 0 ? 0 : 2
+
+            networkModel.updateIpv4Method(connectionUuid, ipv4Method)
+
             stackView.pop()
         }
         onRejected: { // Cancel button clicked

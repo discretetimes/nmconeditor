@@ -292,6 +292,7 @@ QVariantMap NetworkModel::getConnectionDetails(const QString &uuid)
             Ipv4Setting::Ptr ipv4Setting = conn->settings()->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
             if (ipv4Setting) {
                 details["ipv4Method"] = ipv4Setting->method();
+                qInfo() << "Method" << ipv4Setting->method();
                 QList<IpAddress> addresses = ipv4Setting->addresses();
                 QStringList addrStrings;
                 for(const auto& addr : addresses) {
