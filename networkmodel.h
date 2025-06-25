@@ -55,7 +55,10 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+    Q_INVOKABLE QVariantMap get(int row);
     Q_INVOKABLE void remove(int index);
+    Q_INVOKABLE QVariantMap getConnectionDetails(const QString &uuid);
+    Q_INVOKABLE void updateConnection(const QString &uuid, const QVariantMap &newSettings);
 
     QHash<int, QByteArray> roleNames() const override;
 

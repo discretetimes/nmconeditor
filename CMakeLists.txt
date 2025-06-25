@@ -39,6 +39,8 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
     main.qml
     main.qrc
 
+
+
 )
 
 # Link Qt libraries

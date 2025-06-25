@@ -37,7 +37,7 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: root.clicked()
+                onClicked: root.push(Details.qml)
             }
         }
         Item {

@@ -4,5 +4,7 @@
         <file>ControlsPage.qml</file>
         <file>ListDelegate.qml</file>
         <file>remove.png</file>
+        <file>DetailsPage.qml</file>
+        <file>ConnectionsPage.qml</file>
     </qresource>
 </RCC>

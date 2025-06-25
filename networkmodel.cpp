@@ -237,6 +237,77 @@ void NetworkModel::modifyIpv4Setting(const QString &connectionName)
     qWarning() << "Connection" << connectionName << "not found.";
 }
 
+QVariantMap NetworkModel::getConnectionDetails(const QString &uuid)
+{
+    QVariantMap details;
+    for (const auto &conn : m_connections) {
+        if (conn->uuid() == uuid) {
+            details["name"] = conn->name();
+            details["uuid"] = conn->uuid();
+            details["type"] = conn->settings()->connectionType();
+
+            // Add more details as needed
+            Ipv4Setting::Ptr ipv4Setting = conn->settings()->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+            if (ipv4Setting) {
+                details["ipv4Method"] = ipv4Setting->method();
+                QList<IpAddress> addresses = ipv4Setting->addresses();
+                QStringList addrStrings;
+                for(const auto& addr : addresses) {
+                    addrStrings.append(addr.ip().toString() + "/" + QString::number(addr.prefixLength()));
+                }
+                details["addresses"] = addrStrings;
+            }
+            return details;
+        }
+    }
+    return details; // Return empty map if not found
+}
+
+void NetworkModel::updateConnection(const QString &uuid, const QVariantMap &newSettings)
+{
+    for (const auto &conn : m_connections) {
+        if (conn->uuid() == uuid) {
+            ConnectionSettings::Ptr settings = conn->settings();
+            Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+
+            if (newSettings.contains("ipv4Method")) {
+                ipv4Setting->setMethod(static_cast<Ipv4Setting::Method>(newSettings["ipv4Method"].toInt()));
+            }
+
+            if (newSettings.contains("addresses")) {
+                QList<IpAddress> addresses;
+                for(const QVariant &addrVariant : newSettings["addresses"].toList()) {
+                    QStringList parts = addrVariant.toString().split('/');
+                    if(parts.length() == 2) {
+                        IpAddress address;
+                        address.setIp(QHostAddress(parts[0]));
+                        address.setPrefixLength(parts[1].toUInt());
+                        addresses.append(address);
+                    }
+                }
+                ipv4Setting->setAddresses(addresses);
+            }
+
+            conn->update(settings->toMap());
+            qInfo() << "Connection" << conn->name() << "updated.";
+            return;
+        }
+    }
+    qWarning() << "Connection with UUID" << uuid << "not found.";
+}
+
+QVariantMap NetworkModel::get(int row)
+{
+    if (row < 0 || row >= m_connections.count())
+        return QVariantMap();
+
+    QVariantMap res;
+    const auto &connection = m_connections.at(row);
+    res["name"] = connection->name();
+    res["uuid"] = connection->uuid();
+    return res;
+}
+
 void NetworkModel::remove(int index)
 {
     if(index < 0 || index >= m_connections.count()) {
