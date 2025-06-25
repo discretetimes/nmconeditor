@@ -236,3 +236,14 @@ void NetworkModel::modifyIpv4Setting(const QString &connectionName)
     }
     qWarning() << "Connection" << connectionName << "not found.";
 }
+
+void NetworkModel::remove(int index)
+{
+    if(index < 0 || index >= m_connections.count()) {
+        return;
+    }
+    emit beginRemoveRows(QModelIndex(), index, index);
+    deleteConnection("test4");
+    emit endRemoveRows();
+    // emit countChanged(m_data.count());
+}

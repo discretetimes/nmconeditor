@@ -55,6 +55,8 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+    Q_INVOKABLE void remove(int index);
+
     QHash<int, QByteArray> roleNames() const override;
 
 public slots:
