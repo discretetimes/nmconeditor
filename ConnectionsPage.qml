@@ -31,6 +31,7 @@ Page {
                 text: qsTr("Add")
                 onClicked: {
                     // Logic to add a new connection
+                networkModel.createWiredConnection(test4, enp7s18u5u3c2)
                 }
             }
             Button {
@@ -38,7 +39,8 @@ Page {
                 enabled: networkListView.currentIndex != -1
                 onClicked: {
                     var selectedUuid = networkListView.model.get(networkListView.currentIndex).uuid;
-                    stackView.push("EditingEthernetPage.qml", { "connectionUuid": selectedUuid })
+                    // stackView.push("EditingEthernetPage.qml", { "connectionUuid": selectedUuid })
+                    stackView.push("EditIpAddressPage.qml", { "connectionUuid": selectedUuid })
                 }
             }
             Button {

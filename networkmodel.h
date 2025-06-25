@@ -73,6 +73,10 @@ public slots:
     void createWiredConnection(const QString &name, const QString &interfaceName);
     void deleteConnection(const QString &name);
     void modifyIpv4Setting(const QString &connectionName);
+    void updateIpv4Method(const QString &uuid, int method);
+    // void updateIpv4Addr(const QString &connectionName);
+    // void updateIpv4Addr(const QString &uuid, QStringList &addresses);
+
 
 private:
     QList<NetworkManager::Connection::Ptr> m_connections;

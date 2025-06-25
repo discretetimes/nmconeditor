@@ -199,6 +199,8 @@ void NetworkModel::createWiredConnection(const QString &name, const QString &int
     address.setPrefixLength(24);
     addresses.append(address);
 
+    // qInfo() << "Connection addres:" << addresses;
+
     ipv4Setting->setAddresses(addresses);
 
     QDBusPendingReply<QDBusObjectPath> reply = NetworkManager::addConnection(settings->toMap());
@@ -236,6 +238,46 @@ void NetworkModel::modifyIpv4Setting(const QString &connectionName)
     }
     qWarning() << "Connection" << connectionName << "not found.";
 }
+
+void NetworkModel::updateIpv4Method(const QString &uuid, int method)
+{
+    for (const auto &conn : NetworkManager::listConnections()) {
+        qInfo() << "Connection" << conn->uuid();
+        if (conn->uuid() == uuid) {
+            ConnectionSettings::Ptr settings = conn->settings();
+            Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+            if(method == 1)
+                ipv4Setting->setMethod(Ipv4Setting::Automatic);
+            if(method == 2)
+                ipv4Setting->setMethod(Ipv4Setting::Manual);
+            conn->update(settings->toMap());
+            qInfo() << "Connection" << conn->name() << "modified.";
+            return;
+        }
+    }
+    // qWarning() << "Connection" << conn << "not found.";
+}
+
+// void NetworkModel::updateIpv4Addr(const QString &uuid, QStringList &addresses)
+// {
+//     for (const auto &conn : NetworkManager::listConnections()) {
+//             qInfo() << "Connection" << conn->uuid();
+//         if (conn->uuid() == uuid) {
+//             ConnectionSettings::Ptr settings = conn->settings();
+//             Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+//             // if(method == 1)
+//             //     ipv4Setting->setMethod(Ipv4Setting::Automatic);
+//             // if(method == 2)
+//             //     ipv4Setting->setMethod(Ipv4Setting::Manual);
+
+//             // ipv4Setting->setAddresses(addresses);
+//             conn->update(settings->toMap());
+//             qInfo() << "Connection" << conn->name() << "modified.";
+//             return;
+//         }
+//     }
+//     // qWarning() << "Connection" << conn << "not found.";
+// }
 
 QVariantMap NetworkModel::getConnectionDetails(const QString &uuid)
 {

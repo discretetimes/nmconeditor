@@ -7,5 +7,6 @@
         <file>DetailsPage.qml</file>
         <file>ConnectionsPage.qml</file>
         <file>EditingEthernetPage.qml</file>
+        <file>EditIpAddressPage.qml</file>
     </qresource>
 </RCC>

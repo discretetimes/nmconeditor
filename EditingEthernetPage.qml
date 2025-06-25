@@ -47,13 +47,31 @@ Page {
     footer: DialogButtonBox {
         standardButtons: DialogButtonBox.Save | DialogButtonBox.Cancel
         onAccepted: {
-            var newSettings = {
-                "ipv4Method": methodComboBox.currentIndex === 0 ? 1 : 2, // 1 for Auto, 2 for Manual
-                "addresses": []
-            }
+            // var newSettings = {
+            //     "ipv4Method": methodComboBox.currentIndex === 0 ? 1 : 2, // 1 for Auto, 2 for Manual
+            //     "addresses": []
+            // }
+            var ipv4Method = methodComboBox.currentIndex === 0 ? 1 : 2
             // In a real app, you would get the text from the ListView delegates
             // For simplicity, we are not implementing this here.
-            networkModel.updateConnection(connectionUuid, newSettings);
+            networkModel.updateIpv4Method(connectionUuid, ipv4Method);
+
+            // var newAddresses = []
+            // for (var i = 0; i < addressModel.count; i++) {
+            //     var item = addressModel.get(i)
+            //     if (item.address !== "") { // Don't save empty addresses
+            //         newAddresses.push(item.address)
+            //     }
+            // }
+
+            // // Create the map with only the addresses to update
+            // var newSettings = {
+            //     "addresses": newAddresses
+            // }
+
+            // // Call the C++ function to update the connection
+            // networkModel.updateConnection(connectionUuid, newSettings)
+
             stackView.pop();
         }
         onRejected: {
