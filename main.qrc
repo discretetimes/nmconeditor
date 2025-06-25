@@ -6,5 +6,6 @@
         <file>remove.png</file>
         <file>DetailsPage.qml</file>
         <file>ConnectionsPage.qml</file>
+        <file>EditingEthernetPage.qml</file>
     </qresource>
 </RCC>

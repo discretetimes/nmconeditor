@@ -270,9 +270,9 @@ void NetworkModel::updateConnection(const QString &uuid, const QVariantMap &newS
             ConnectionSettings::Ptr settings = conn->settings();
             Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
 
-            if (newSettings.contains("ipv4Method")) {
-                ipv4Setting->setMethod(static_cast<Ipv4Setting::Method>(newSettings["ipv4Method"].toInt()));
-            }
+            // if (newSettings.contains("ipv4Method")) {
+            //     ipv4Setting->setMethod(static_cast<Ipv4Setting::Manual>(newSettings["ipv4Method"].toInt()));
+            // }
 
             if (newSettings.contains("addresses")) {
                 QList<IpAddress> addresses;

@@ -5,70 +5,49 @@ import QtQuick.Layouts 1.15
 Page {
     title: qsTr("Network Connections")
 
-    // Component {
-        // id: connectionsPage
-        // ColumnLayout {
-            // anchors.fill: parent
-            // anchors.margins: 10
+    ColumnLayout {
+        anchors.fill: parent
 
-            // Label {
-            //     text: "Available Wired Connections"
-            //     font.bold: true
-            // }
+        ListView {
+            id: networkListView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            model: networkModel
+            currentIndex: -1
+            delegate: ItemDelegate {
+                width: parent.width
+                text: model.name
+                highlighted: ListView.isCurrentItem
 
-            // Button {
-            //     text: "Manage Connections"
-            //     Layout.alignment: Qt.AlignRight
-            //     onClicked: stackView.push(DetailsPage)
-            // }
-
-            ListView {
-                id: connectionsView
-                // Layout.fillWidth: true
-                // Layout.fillHeight: true
-                // clip: true
-                anchors.fill: parent
-                model: networkModel
-                delegate: ItemDelegate {
-                    // height: 50
-                    width: parent.width
-
-                    Text {
-                        text: "Name: " + model.name
-                    }
-
-                    onClicked: {
-                        // make this delegate the current item
-                        connectionsView.currentIndex = index
-                        connectionsView.focus = true
-                        stackView.push("DetailsPage.qml", { "connectionUuid": model.uuid })
-                        // stackView.push("DetailsPage.qml")
-                    }
-
-                    // onRemove: {
-                    //     // remove the current entry from the model
-                    //     networkModel.remove(index)
-                    // }
+                onClicked: {
+                    networkListView.currentIndex = index
                 }
-
             }
+        }
 
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
             Button {
-                text: "Create Con"
-                onClicked: stackView.push("DetailsPage.qml", { "connectionUuid": model.uuid })
-                    // networkModel.createWiredConnection(connectionNameInput.text, interfaceNameInput.text)
+                text: qsTr("Add")
+                onClicked: {
+                    // Logic to add a new connection
+                }
             }
-            // }
-        // }
-    // }
+            Button {
+                text: qsTr("Modify")
+                enabled: networkListView.currentIndex != -1
+                onClicked: {
+                    var selectedUuid = networkListView.model.get(networkListView.currentIndex).uuid;
+                    stackView.push("EditingEthernetPage.qml", { "connectionUuid": selectedUuid })
+                }
+            }
+            Button {
+                text: qsTr("Delete")
+                enabled: networkListView.currentIndex != -1
+                onClicked: {
+                    networkModel.remove(networkListView.currentIndex)
+                }
+            }
+        }
+    }
 }
-// }
-    // Component.onCompleted: {
-    //     networkModel.refresh()
-    // }
-
-    // Component {
-    //     id: controlsPage
-    //     ControlsPage {}
-    // }
-
