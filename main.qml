@@ -35,10 +35,21 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 model: networkModel
-                delegate: ItemDelegate {
+                delegate: ListDelegate {
                     height: 50
+
                     Text {
                         text: "Name: " + model.name
+                    }
+                    // onClicked: {
+                    //     // make this delegate the current item
+                    //     // connectionsView.currentIndex = index
+                    //     connectionsView.focus = true
+                    // }
+
+                    onRemove: {
+                        // remove the current entry from the model
+                        networkModel.remove(index)
                     }
                 }
             }
