@@ -12,18 +12,13 @@ Page {
         id: addressModel
     }
 
-    // When the page is ready, fetch details and set the initial UI state
     Component.onCompleted: {
         connectionDetails = networkModel.getConnectionDetails(connectionUuid)
-
-        // --- Using if/else to set the ComboBox ---
         if (connectionDetails.ipv4Method === 0) {
-            methodComboBox.currentIndex = 0 // Select "Automatic (DHCP)"
+            methodComboBox.currentIndex = 0
         } else {
-            methodComboBox.currentIndex = 1 // Select "Manual"
+            methodComboBox.currentIndex = 1
         }
-        // --- End of if/else block ---
-
         for (var i = 0; i < connectionDetails.addresses.length; ++i) {
             addressModel.append({ "address": connectionDetails.addresses[i] })
         }
@@ -40,25 +35,41 @@ Page {
             model: ["Automatic (DHCP)", "Manual"]
         }
 
-
         ListView {
             id: addressListView
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             model: addressModel
-            currentIndex: -1
+            // currentIndex: -1
             enabled: methodComboBox.currentIndex === 1
 
-            delegate: TextField {
+            // --- FIX START: Replace TextField delegate with ItemDelegate ---
+            delegate: ItemDelegate {
                 width: parent.width
-                text: model.address
-                placeholderText: enabled ? "e.g., 192.168.1.100/24" : "Not applicable"
-                readOnly: !enabled
-                onEditingFinished: {
-                    model.address = text
+                // Visually indicate when the item is selected
+                highlighted: ListView.isCurrentItem
+
+                TextField {
+                    id: addressField
+                    // Anchor the text field within the delegate
+                    anchors.fill: parent
+                    text: model.address
+                    placeholderText: parent.enabled ? "e.g., 192.168.1.100/24" : "Not applicable"
+                    // Make the text field transparent so the highlight shows through
+                    background: null
+                    onEditingFinished: {
+                        model.address = text
+                    }
+                }
+
+                onClicked: {
+                    // This is the crucial part that was missing.
+                    // It tells the ListView which item is now current.
+                    addressListView.currentIndex = index
                 }
             }
+            // --- FIX END ---
         }
 
         RowLayout {
@@ -71,6 +82,7 @@ Page {
             }
             Button {
                 text: qsTr("Remove Selected")
+                // This enabled condition will now work correctly.
                 // enabled: addressListView.currentIndex !== -1
                 onClicked: {
                     // if (addressListView.currentIndex !== -1) {
@@ -83,8 +95,7 @@ Page {
 
     footer: DialogButtonBox {
         standardButtons: DialogButtonBox.Save | DialogButtonBox.Cancel
-
-        onAccepted: { // Save button clicked
+        onAccepted: {
             var newAddresses = []
             if(methodComboBox.currentIndex === 1) {
                 for (var i = 0; i < addressModel.count; i++) {
@@ -94,27 +105,20 @@ Page {
                     }
                 }
             }
-
             var newMethod;
-            // --- Using if/else to set the value to save ---
             if (methodComboBox.currentIndex === 0) {
-                newMethod = 0; // 0 for Automatic
+                newMethod = 0;
             } else {
-                newMethod = 2; // 2 for Manual
+                newMethod = 2;
             }
-            // --- End of if/else block ---
-
             var newSettings = {
                 "ipv4Method": newMethod,
                 "addresses": newAddresses
             }
-
-            networkModel.updateIpv4Method(connectionUuid, newMethod);
-
             networkModel.updateConnection(connectionUuid, newSettings)
             stackView.pop()
         }
-        onRejected: { // Cancel button clicked
+        onRejected: {
             stackView.pop()
         }
     }
