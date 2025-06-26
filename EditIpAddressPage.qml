@@ -41,35 +41,44 @@ Page {
             Layout.fillHeight: true
             clip: true
             model: addressModel
-            // currentIndex: -1
+            currentIndex: -1
             enabled: methodComboBox.currentIndex === 1
 
-            // --- FIX START: Replace TextField delegate with ItemDelegate ---
             delegate: ItemDelegate {
                 width: parent.width
-                // Visually indicate when the item is selected
                 highlighted: ListView.isCurrentItem
 
+                // --- FIX START: Explicit MouseArea and Focus Handling ---
                 TextField {
                     id: addressField
-                    // Anchor the text field within the delegate
                     anchors.fill: parent
                     text: model.address
                     placeholderText: parent.enabled ? "e.g., 192.168.1.100/24" : "Not applicable"
-                    // Make the text field transparent so the highlight shows through
                     background: null
+                    readOnly: !parent.enabled
+                    // When the user is done typing, update the model
                     onEditingFinished: {
                         model.address = text
                     }
                 }
 
-                onClicked: {
-                    // This is the crucial part that was missing.
-                    // It tells the ListView which item is now current.
-                    addressListView.currentIndex = index
+                // This MouseArea overlays the whole delegate
+                MouseArea {
+                    anchors.fill: parent
+                    // This ensures clicks are not propagated further up,
+                    // which is good practice here.
+                    preventStealing: true
+
+                    onClicked: {
+                        // 1. Set the ListView's current index. This is the key fix.
+                        addressListView.currentIndex = index
+
+                        // 2. Give the TextField focus so the user can type.
+                        addressField.forceActiveFocus()
+                    }
                 }
+                // --- FIX END ---
             }
-            // --- FIX END ---
         }
 
         RowLayout {
@@ -82,12 +91,11 @@ Page {
             }
             Button {
                 text: qsTr("Remove Selected")
-                // This enabled condition will now work correctly.
-                // enabled: addressListView.currentIndex !== -1
+                enabled: addressListView.currentIndex !== -1
                 onClicked: {
-                    // if (addressListView.currentIndex !== -1) {
+                    if (addressListView.currentIndex !== -1) {
                         addressModel.remove(addressListView.currentIndex)
-                    // }
+                    }
                 }
             }
         }
