@@ -32,6 +32,7 @@ Page {
                 onClicked: {
                     // Logic to add a new connection
                 networkModel.createWiredConnection(test4, enp7s18u5u3c2)
+                    // stackView.push("EditEthernetPage.qml", { "connectionUuid": selectedUuid })
                 }
             }
             Button {

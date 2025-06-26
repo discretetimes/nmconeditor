@@ -246,7 +246,7 @@ void NetworkModel::updateIpv4Method(const QString &uuid, int method)
         if (conn->uuid() == uuid) {
             ConnectionSettings::Ptr settings = conn->settings();
             Ipv4Setting::Ptr ipv4Setting = settings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
-            if(method == 1)
+            if(method == 0)
                 ipv4Setting->setMethod(Ipv4Setting::Automatic);
             if(method == 2)
                 ipv4Setting->setMethod(Ipv4Setting::Manual);

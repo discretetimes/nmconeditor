@@ -12,13 +12,21 @@ Page {
         id: addressModel
     }
 
+    // When the page is ready, fetch details and set the initial UI state
     Component.onCompleted: {
         connectionDetails = networkModel.getConnectionDetails(connectionUuid)
-        // Set the initial index of the ComboBox
-        // methodComboBox.currentIndex = connectionDetails.ipv4Method === 1 ? 0 : 1;
-        // for (var i = 0; i < connectionDetails.addresses.length; ++i) {
-        //     addressModel.append({ "address": connectionDetails.addresses[i] })
-        // }
+
+        // --- Using if/else to set the ComboBox ---
+        if (connectionDetails.ipv4Method === 0) {
+            methodComboBox.currentIndex = 0 // Select "Automatic (DHCP)"
+        } else {
+            methodComboBox.currentIndex = 1 // Select "Manual"
+        }
+        // --- End of if/else block ---
+
+        for (var i = 0; i < connectionDetails.addresses.length; ++i) {
+            addressModel.append({ "address": connectionDetails.addresses[i] })
+        }
     }
 
     ColumnLayout {
@@ -29,9 +37,9 @@ Page {
         ComboBox {
             id: methodComboBox
             Layout.fillWidth: true
-            currentIndex: connectionDetails.ipv4Method === 0 ? 0 : 1
             model: ["Automatic (DHCP)", "Manual"]
         }
+
 
         ListView {
             id: addressListView
@@ -40,7 +48,6 @@ Page {
             clip: true
             model: addressModel
             currentIndex: -1
-            // Enable the list only when the method is 'Manual'
             enabled: methodComboBox.currentIndex === 1
 
             delegate: TextField {
@@ -55,7 +62,6 @@ Page {
         }
 
         RowLayout {
-            // Disable add/remove buttons if not in Manual mode
             enabled: methodComboBox.currentIndex === 1
             Button {
                 text: qsTr("Add Address")
@@ -65,11 +71,11 @@ Page {
             }
             Button {
                 text: qsTr("Remove Selected")
-                enabled: addressListView.currentIndex !== -1
+                // enabled: addressListView.currentIndex !== -1
                 onClicked: {
-                    if (addressListView.currentIndex !== -1) {
+                    // if (addressListView.currentIndex !== -1) {
                         addressModel.remove(addressListView.currentIndex)
-                    }
+                    // }
                 }
             }
         }
@@ -80,7 +86,7 @@ Page {
 
         onAccepted: { // Save button clicked
             var newAddresses = []
-            if(methodComboBox.currentIndex === 1) { // Only save addresses if method is Manual
+            if(methodComboBox.currentIndex === 1) {
                 for (var i = 0; i < addressModel.count; i++) {
                     var item = addressModel.get(i)
                     if (item.address !== "") {
@@ -88,12 +94,24 @@ Page {
                     }
                 }
             }
+
+            var newMethod;
+            // --- Using if/else to set the value to save ---
+            if (methodComboBox.currentIndex === 0) {
+                newMethod = 0; // 0 for Automatic
+            } else {
+                newMethod = 2; // 2 for Manual
+            }
+            // --- End of if/else block ---
+
+            var newSettings = {
+                "ipv4Method": newMethod,
+                "addresses": newAddresses
+            }
+
+            networkModel.updateIpv4Method(connectionUuid, newMethod);
+
             networkModel.updateConnection(connectionUuid, newSettings)
-
-            var ipv4Method = methodComboBox.currentIndex === 0 ? 0 : 2
-
-            networkModel.updateIpv4Method(connectionUuid, ipv4Method)
-
             stackView.pop()
         }
         onRejected: { // Cancel button clicked
