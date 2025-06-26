@@ -57,6 +57,7 @@ public:
 
     Q_INVOKABLE QVariantMap get(int row);
     Q_INVOKABLE void remove(int index);
+
     Q_INVOKABLE QVariantMap getConnectionDetails(const QString &uuid);
     Q_INVOKABLE void updateConnection(const QString &uuid, const QVariantMap &newSettings);
     Q_INVOKABLE void createConnection(const QString &name, const QVariantMap &settings);
@@ -72,7 +73,8 @@ public slots:
     void deactivateWiredConnection(const QString &connectionName);
     void createAutoWiredConnection(const QString &name, const QString &interfaceName);
     void createWiredConnection(const QString &name, const QString &interfaceName);
-    void deleteConnection(const QString &name);
+    // void deleteConnection(const QString &name);
+    void deleteConnection(const QString &uuid);
     void modifyIpv4Setting(const QString &connectionName);
     void updateIpv4Method(const QString &uuid, int method);
     // void updateIpv4Addr(const QString &connectionName);

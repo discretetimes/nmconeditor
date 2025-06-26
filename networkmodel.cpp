@@ -212,16 +212,30 @@ void NetworkModel::createWiredConnection(const QString &name, const QString &int
     }
 }
 
-void NetworkModel::deleteConnection(const QString &name)
+// void NetworkModel::deleteConnection(const QString &name)
+// {
+//     for (const auto &conn : NetworkManager::listConnections()) {
+//         if (conn->name() == name) {
+//             conn->remove();
+//             qInfo() << "Connection" << name << "deleted.";
+//             return;
+//         }
+//     }
+//     qWarning() << "Connection" << name << "not found.";
+// }
+
+void NetworkModel::deleteConnection(const QString &uuid)
 {
+    // We re-fetch the list here to ensure we have the most up-to-date
+    // DBus object paths before attempting to delete.
     for (const auto &conn : NetworkManager::listConnections()) {
-        if (conn->name() == name) {
-            conn->remove();
-            qInfo() << "Connection" << name << "deleted.";
+        if (conn->uuid() == uuid) {
+            conn->remove(); // This is the call that tells NetworkManager to delete the connection
+            qInfo() << "Connection with UUID" << uuid << "deleted.";
             return;
         }
     }
-    qWarning() << "Connection" << name << "not found.";
+    qWarning() << "Connection with UUID" << uuid << "not found for deletion.";
 }
 
 void NetworkModel::modifyIpv4Setting(const QString &connectionName)
@@ -403,8 +417,14 @@ void NetworkModel::remove(int index)
     if(index < 0 || index >= m_connections.count()) {
         return;
     }
+
+    NetworkManager::Connection::Ptr connectionToDelete = m_connections.at(index);
+    QString uuid = connectionToDelete->uuid();
+
     emit beginRemoveRows(QModelIndex(), index, index);
-    deleteConnection("test4");
+    m_connections.removeAt(index);
     emit endRemoveRows();
+
+    deleteConnection(uuid);
     // emit countChanged(m_data.count());
 }
