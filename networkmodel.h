@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE void remove(int index);
     Q_INVOKABLE QVariantMap getConnectionDetails(const QString &uuid);
     Q_INVOKABLE void updateConnection(const QString &uuid, const QVariantMap &newSettings);
+    Q_INVOKABLE void createConnection(const QString &name, const QVariantMap &settings);
 
     QHash<int, QByteArray> roleNames() const override;
 

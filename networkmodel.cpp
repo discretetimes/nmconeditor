@@ -339,6 +339,52 @@ void NetworkModel::updateConnection(const QString &uuid, const QVariantMap &newS
     qWarning() << "Connection with UUID" << uuid << "not found.";
 }
 
+void NetworkModel::createConnection(const QString &name, const QVariantMap &settings)
+{
+    ConnectionSettings::Ptr newSettings = ConnectionSettings::Ptr(new ConnectionSettings(ConnectionSettings::Wired));
+    newSettings->setId(name);
+    newSettings->setUuid(ConnectionSettings::createNewUuid());
+
+    Ipv4Setting::Ptr ipv4Setting = newSettings->setting(Setting::Ipv4).dynamicCast<Ipv4Setting>();
+    ipv4Setting->setInitialized(true);
+
+    // if (settings.contains("ipv4Method")) {
+    //     ipv4Setting->setMethod(static_cast<Ipv4Setting::Method>(settings["ipv4Method"].toInt()));
+    // }
+
+    int method = settings["ipv4Method"].toInt();
+
+    if(method == 0){
+        qInfo() << "method: auto " << method;
+        ipv4Setting->setMethod(Ipv4Setting::Automatic);
+    } else {
+    ipv4Setting->setMethod(Ipv4Setting::Manual);
+
+    if (settings.contains("addresses")) {
+        QList<IpAddress> addresses;
+        for(const QVariant &addrVariant : settings["addresses"].toList()) {
+            QStringList parts = addrVariant.toString().split('/');
+            if(parts.length() == 2) {
+                IpAddress address;
+                address.setIp(QHostAddress(parts[0]));
+                address.setPrefixLength(parts[1].toUInt());
+                addresses.append(address);
+            }
+        }
+        ipv4Setting->setAddresses(addresses);
+    }
+    }
+
+    QDBusPendingReply<QDBusObjectPath> reply = NetworkManager::addConnection(newSettings->toMap());
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "Failed to add connection:" << reply.error().name() << reply.error().message();
+    } else {
+        qInfo() << "Connection added successfully. Path:" << reply.value().path();
+        refresh(); // Refresh the model to show the new connection in the list
+    }
+}
+
 QVariantMap NetworkModel::get(int row)
 {
     if (row < 0 || row >= m_connections.count())
