@@ -5,6 +5,19 @@ import QtQuick.Layouts 1.15
 Page {
     title: qsTr("Network Connections")
 
+    // // --- Add this block to handle the signal from the C++ model ---
+    // Connections {
+    //     target: networkModel
+    //     // This function is automatically called when the connectionsChanged() signal is emitted
+    //     function onConnectionsChanged() {
+    //         // A simple and effective way to force the ListView to update
+    //         // is to briefly detach and re-attach its model.
+    //         var m = networkListView.model;
+    //         networkListView.model = null;
+    //         networkListView.model = m;
+    //     }
+    // }
+
     ColumnLayout {
         anchors.fill: parent
 
@@ -43,6 +56,14 @@ Page {
                     var selectedUuid = networkListView.model.get(networkListView.currentIndex).uuid;
                     // stackView.push("EditingEthernetPage.qml", { "connectionUuid": selectedUuid })
                     stackView.push("EditIpAddressPage.qml", { "connectionUuid": selectedUuid })
+                }
+            }
+            Button {
+                text: qsTr("Refresh")
+                onClicked: {
+                    // This calls the existing C++ refresh() function,
+                    // which resets the model and updates the view.
+                    networkModel.refresh()
                 }
             }
             Button {

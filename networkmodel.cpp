@@ -382,6 +382,7 @@ void NetworkModel::createConnection(const QString &name, const QVariantMap &sett
     } else {
         qInfo() << "Connection added successfully. Path:" << reply.value().path();
         refresh(); // Refresh the model to show the new connection in the list
+        emit connectionsChanged(); // Emit the signal to notify QML
     }
 }
 

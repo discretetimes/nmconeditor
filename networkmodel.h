@@ -78,6 +78,8 @@ public slots:
     // void updateIpv4Addr(const QString &connectionName);
     // void updateIpv4Addr(const QString &uuid, QStringList &addresses);
 
+Q_SIGNALS:
+    void connectionsChanged();
 
 private:
     QList<NetworkManager::Connection::Ptr> m_connections;
