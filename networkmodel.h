@@ -62,6 +62,11 @@ public:
     Q_INVOKABLE void updateConnection(const QString &uuid, const QVariantMap &newSettings);
     Q_INVOKABLE void createConnection(const QString &name, const QVariantMap &settings);
 
+    // Q_INVOKABLE NMVariantMapMap updateSetting(const NMVariantMapMap &settings , const QVariantMap &newSettings);
+
+    // NMVariantMapMap setting() const;
+    // current m_setting
+
     QHash<int, QByteArray> roleNames() const override;
 
 public slots:

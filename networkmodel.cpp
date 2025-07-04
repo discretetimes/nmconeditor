@@ -400,6 +400,14 @@ void NetworkModel::createConnection(const QString &name, const QVariantMap &sett
     }
 }
 
+// NMVariantMapMap updateSetting(const NMVariantMapMap &settings , const QVariantMap &newSettings)
+// {
+//     NetworkManager::ConnectionSettings::Ptr connectionSettings =
+//     NetworkManager::ConnectionSettings::Ptr(new NetworkManager::ConnectionSettings(m_connection->connectionType()));
+//     connectionSettings->setUuid(m_connection->uuid());
+//     return connectionSettings->toMap();
+// }
+
 QVariantMap NetworkModel::get(int row)
 {
     if (row < 0 || row >= m_connections.count())
